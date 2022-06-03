@@ -1,9 +1,10 @@
 //Models
 const { Product } = require('../models/products.model');
-
+const { Categories } = require('../models/categories.model');
 // Utils
 const { catchAsync } = require('../utils/catchAsync');
 const { AppError } = require('../utils/appError');
+const { User } = require('../models/user.model');
 
 
 const createProducts = catchAsync(async (req, res, next) => {
@@ -33,7 +34,13 @@ const createProducts = catchAsync(async (req, res, next) => {
 
 const productsAll = catchAsync(async (req, res, next) => {
   
-    const products = await Product.findAll();
+    const products = await Product.findAll(
+        {
+            where: { status:'active'},
+            include: [{ model: Categories, attributes: [ 'name' ] },
+                      { model: User, attributes: ['username'] }]
+        }
+    );
     res.status(200).json({ products });
 });
 

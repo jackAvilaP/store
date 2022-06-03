@@ -1,5 +1,5 @@
 //Models
-const { status } = require('express/lib/response');
+
 const { Carts } = require('../models/carts.model');
 const { Orders } = require('../models/orders.model');
 const { Product } = require('../models/products.model');
@@ -54,10 +54,10 @@ const addProductCart = catchAsync(async (req, res, next) => {
         }
 
         // Adding a  product to current cart
-        await ProductsInCart.create({ cartId: cart.id, productId, quantity });
+       const addCarts = await ProductsInCart.create({ cartId: cart.id, productId, quantity });
     }
 
-    res.status(200).json({ status: 'success' });
+    res.status(200).json({ status: 'success', cart});
 });
 
 const getAllCart = catchAsync(async (req, res, next) => {
@@ -66,12 +66,11 @@ const getAllCart = catchAsync(async (req, res, next) => {
 
     //Pasarlo a middlewares
     const allCartUser = await Carts.findAll({
-        where: { userId: sessionUser.id },
+        where: { userId: sessionUser.id, status: 'active' },
         include:
             [
                 {
                     model: ProductsInCart, 
-                
                     include: [
                         { model: Product, }
                     ]
@@ -150,7 +149,7 @@ const purchaseCart = catchAsync(async (req, res, next) => {
     await quantityProduct.update({
         quantity: resQuantity,
     });
-    
+  
   const order = await Orders.create({
         userId:sessionUser.id,
         cartId:cart.id,
@@ -159,6 +158,7 @@ const purchaseCart = catchAsync(async (req, res, next) => {
     });
     
     await productInCart.update({ status: 'purchased' });
+    await cart.update({ status: 'purchased' });
 
     res.status(200).json({ status: 'success', order });
 });
@@ -177,6 +177,7 @@ const removeProductCart = catchAsync(async (req, res, next) => {
     });
 
     await productInCart.update({ status: 'removed' });
+    await cart.update({ status: 'removed' });
 
     res.status(200).json({ status: 'success' });
 });

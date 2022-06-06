@@ -16,6 +16,16 @@ const { AppError } = require('../utils/appError');
 
 dotenv.config({ path: './config.env' });
 
+const gettAllUser = catchAsync(async (req,res,next) => {
+
+  const users = await User.findAll({
+    where: { status:'active' }
+  });
+  res.status(200).json({
+    users,
+  });
+});
+
 const getAllUserProducts = catchAsync(async (req, res, next) => {
 
   const { sessionUser } = req;
@@ -144,6 +154,7 @@ const checkToken = catchAsync(async (req, res, next) => {
 
 module.exports = {
   getAllUserProducts,
+  gettAllUser,
   getAllOrdersUser,
   getUserOrdersById,
   createUser,

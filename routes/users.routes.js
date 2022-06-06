@@ -13,6 +13,7 @@ const {
   getAllOrdersUser,
   getUserOrdersById,
   createUser,
+  gettAllUser,
   getUserById,
   updateUser,
   deleteUser,
@@ -24,7 +25,7 @@ const { createUserValidations, checkValidations } = require('../middlewares/vali
 const router = express.Router();
 
 router.post('/', createUserValidations, checkValidations, createUser);
-
+router.get('/', gettAllUser);
 router.post('/login', login);
 
 // Apply protectToken middleware
